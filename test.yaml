@@ -1,0 +1,3294 @@
+openapi: 3.1.0
+info:
+  title: Liability Navigator
+  version: '1.0'
+  description: |
+    The Liability Navigator® API provides the flexibility for client applications to obtain information regarding current claims, generate assessments and manage the incident details for liability claims.
+  summary: Liability Navigator API
+servers:
+  - url: 'https://lnav.iso.com/api/v1.0/'
+    description: Production
+  - description: UAT
+    url: 'https://lnavuat.iso.com/api/v1.0/'
+paths:
+  /claims:
+    get:
+      summary: Get claim information
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  claimId:
+                    type: string
+                    example: 431c987834424de9adef
+                  claimNumber:
+                    type: string
+                    example: CN1234567
+                required:
+                  - claimId
+                  - claimNumber
+              examples:
+                200-example:
+                  value:
+                    claimId: 431c987834424de9adef
+                    claimNumber: CN1234567
+        '422':
+          description: Unprocessable Entity. Input parameter error
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    claimId: null
+                    claimNo: null
+                    status: Failed
+                    errorMessage: Claim Number Cannot be Null
+                    errorCode: 422
+                properties:
+                  claimId:
+                    type:
+                      - string
+                      - 'null'
+                  claimNumber:
+                    type:
+                      - string
+                      - 'null'
+                  errorMessage:
+                    type:
+                      - string
+                      - 'null'
+              examples:
+                example-1:
+                  value:
+                    claimId: null
+                    claimNumber: null
+                    errorMessage: Claim Number Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    claimId: null
+                    claimNo: CN02232023
+                    status: Failed
+                    errorMessage: ClaimId Not Exists
+                    errorCode: 485
+                properties:
+                  claimId:
+                    type:
+                      - string
+                      - 'null'
+                  claimNumber:
+                    type:
+                      - string
+                      - 'null'
+                  errorMessage:
+                    type:
+                      - string
+                      - 'null'
+              examples:
+                example-1:
+                  value:
+                    claimId: null
+                    claimNumber: CN1234587
+                    status: Failed
+                    errorMessage: ClaimId Not Exists
+                    errorCode: 485
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      operationId: GetClaims
+      description: 'Retrieves the claim unique identifier based on the claim number passed. '
+      parameters:
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+        - schema:
+            type: string
+            example: CN1234567
+          in: query
+          name: claimNumber
+          description: Claim number
+          required: true
+        - schema:
+            type: string
+            example: '01'
+          in: query
+          name: sequenceNumber
+          description: Sequence number of the claim
+      tags:
+        - Claims
+    parameters: []
+  /incidentDetails:
+    get:
+      summary: Incident details
+      operationId: GetIncidentDetails
+      description: 'Gets all the incident details question and answers '
+      parameters:
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+        - schema:
+            type: string
+            example: 431c987834424de9adef
+          in: query
+          name: claimId
+          required: true
+          description: Claim id for the incident details data.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    existingIncidentDetails:
+                      state: string
+                      county: string
+                      incidentType: string
+                      accidentType: string
+                      claimantList:
+                        - string
+                      questionsAnswers:
+                        - questionId: string
+                          accidentType: string
+                          answerText: string
+                          vehicleNumber: string
+                          questionCategoryCode: string
+                          roleCode: string
+                          questionOtherAnswers:
+                            - questionId: string
+                              questionCategoryCode: string
+                              tableName: string
+                              tableColumnName: string
+                              answerCode: string
+                              controlIndicator: string
+                              answerTxt: string
+                              controlType: string
+                              controlLabel: string
+                              controlUctType: string
+                              controlUctValues:
+                                - name: string
+                                  value: string
+                          questionText: string
+                          questionType: string
+                          questionUctType: string
+                          questionUctValues:
+                            - name: string
+                              value: string
+                          questionSequence: string
+                          currentCategoryCode: string
+                          questionValidationCode: string
+                    status: string
+                    errorMessage: string
+                    errorCode: 0
+                properties:
+                  existingIncidentDetails:
+                    type: object
+                    properties:
+                      state:
+                        type: string
+                      county:
+                        type: string
+                      incidentType:
+                        type: string
+                      accidentType:
+                        type: string
+                        minLength: 1
+                      claimantList:
+                        type: array
+                        items:
+                          type: string
+                      questionsAnswers:
+                        type: array
+                        uniqueItems: true
+                        items:
+                          type: object
+                          properties:
+                            questionId:
+                              type: string
+                              minLength: 1
+                            accidentType:
+                              type: string
+                              minLength: 1
+                            answerText:
+                              type: string
+                            vehicleNumber:
+                              type: string
+                              minLength: 1
+                            questionCategoryCode:
+                              type: string
+                              minLength: 1
+                            roleCode:
+                              type: string
+                            questionOtherAnswers:
+                              type: array
+                              uniqueItems: true
+                              items:
+                                type: object
+                                properties:
+                                  questionId:
+                                    type: string
+                                    minLength: 1
+                                  questionCategoryCode:
+                                    type: string
+                                    minLength: 1
+                                  tableName:
+                                    type: string
+                                    minLength: 1
+                                  tableColumnName:
+                                    type: string
+                                    minLength: 1
+                                  answerCode:
+                                    type: string
+                                    minLength: 1
+                                  controlIndicator:
+                                    type: string
+                                    minLength: 1
+                                  answerTxt:
+                                    type: string
+                                  controlType:
+                                    type: string
+                                    minLength: 1
+                                  controlLabel:
+                                    type: string
+                                  controlUctType:
+                                    type:
+                                      - string
+                                      - 'null'
+                                  controlUctValues:
+                                    type:
+                                      - array
+                                      - 'null'
+                                    uniqueItems: true
+                                    minItems: 1
+                                    items:
+                                      type: object
+                                      properties:
+                                        name:
+                                          type: string
+                                          minLength: 1
+                                        value:
+                                          type: string
+                                          minLength: 1
+                                      required:
+                                        - name
+                                        - value
+                            questionText:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+                            questionType:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+                            questionUctType:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+                            questionUctValues:
+                              type:
+                                - array
+                                - 'null'
+                              uniqueItems: true
+                              minItems: 1
+                              items:
+                                type: object
+                                properties:
+                                  name:
+                                    type: string
+                                    minLength: 1
+                                  value:
+                                    type: string
+                                    minLength: 1
+                                required:
+                                  - name
+                                  - value
+                            questionSequence:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+                            currentCategoryCode:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+                            questionValidationCode:
+                              type:
+                                - string
+                                - 'null'
+                              minLength: 1
+              examples:
+                example-1:
+                  value:
+                    existingIncidentDetails:
+                      state: AZ
+                      county: C6
+                      incidentType: SLP
+                      accidentType: SF
+                      claimantList:
+                        - 8afcb41d97adcb5d1218
+                      questionsAnswers:
+                        - questionId: '401'
+                          accidentType: SF
+                          answerText: ACT
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q1
+                          roleCode: ' '
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '402'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q2
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '403'
+                          accidentType: SF
+                          answerText: 'NO'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q3
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '405'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q5
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '406'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q6
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '407'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q7
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '408'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q8
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '409'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q9
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '426'
+                          accidentType: SF
+                          answerText: NDG
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q26
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '427'
+                          accidentType: SF
+                          answerText: DEV
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q27
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '428'
+                          accidentType: SF
+                          answerText: ACT
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q28
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '429'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q29
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '432'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q32
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '437'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q37
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '438'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q38
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '439'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q39
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '446'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q46
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '447'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q47
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '448'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q48
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '449'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q49
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '450'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q50
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '451'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q51
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '452'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q52
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '453'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q53
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '454'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q54
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '456'
+                          accidentType: SF
+                          answerText: INV
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q56
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '457'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q57
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '458'
+                          accidentType: SF
+                          answerText: ACL
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q58
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '461'
+                          accidentType: SF
+                          answerText: PCA
+                          vehicleNumber: '0'
+                          questionCategoryCode: SFNPC_Q61
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '462'
+                          accidentType: SF
+                          answerText: 'YES'
+                          vehicleNumber: '0'
+                          questionCategoryCode: SF999_Q62
+                          roleCode: ''
+                          questionOtherAnswers: []
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '519'
+                          accidentType: SF
+                          answerText: NDC
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_CAUSEOFACD
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '519'
+                              questionCategoryCode: CAUSEOFACD
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: NDC
+                              controlIndicator: CAUSEOFACCIDENT
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '520'
+                          accidentType: SF
+                          answerText: BUS
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_PREMISSES
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '520'
+                              questionCategoryCode: PREMISSES
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: BUS
+                              controlIndicator: PREMISES_TYP
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '521'
+                          accidentType: SF
+                          answerText: INS
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_ACCLOC
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '521'
+                              questionCategoryCode: ACCLOC
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: INS
+                              controlIndicator: ACD_LOC
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '522'
+                          accidentType: SF
+                          answerText: CND
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_PROPTYP
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '522'
+                              questionCategoryCode: PROPTYP
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: CND
+                              controlIndicator: PROP_TYPE
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '523'
+                          accidentType: SF
+                          answerText: ENT
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_PROPUSG
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '523'
+                              questionCategoryCode: PROPUSG
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: ENT
+                              controlIndicator: PROP_USAGE
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '524'
+                          accidentType: SF
+                          answerText: OWN
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_INSROLE
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '524'
+                              questionCategoryCode: INSROLE
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: OWN
+                              controlIndicator: IND_ROLE
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+                        - questionId: '525'
+                          accidentType: SF
+                          answerText: NTL
+                          vehicleNumber: '0'
+                          questionCategoryCode: COMMON_LGTCOND
+                          roleCode: ''
+                          questionOtherAnswers:
+                            - questionId: '525'
+                              questionCategoryCode: LGTCOND
+                              tableName: Table1
+                              tableColumnName: Column1
+                              answerCode: NTL
+                              controlIndicator: LGT_COND
+                              answerTxt: ''
+                              controlType: drp
+                              controlLabel: ''
+                              controlUctType: null
+                              controlUctValues: null
+                          questionText: null
+                          questionType: null
+                          questionUctType: null
+                          questionUctValues: null
+                          questionSequence: null
+                          currentCategoryCode: null
+                          questionValidationCode: null
+        '422':
+          description: Unprocessable Entity. Input parameter error.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    existingIncidentDetails: null
+                    status: Failed
+                    errorMessage: ClaimId Cannot be Null
+                    errorCode: 422
+                properties:
+                  existingIncidentDetails:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-1:
+                  value:
+                    existingIncidentDetails: null
+                    errorMessage: ClaimId Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: null
+                    status: Failed
+                    errorMessage: ClaimId Not Exists
+                    errorCode: 485
+                properties:
+                  existingIncidentDetails:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-1:
+                  value:
+                    existingIncidentDetails: null
+                    errorMessage: ClaimId does not exists
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      tags:
+        - Incident details
+    post:
+      summary: Incident details
+      operationId: SaveIncidentDetails
+      description: |
+        Saves the incident details data step by step by dynamically generating questions based on the scenario. This method need to be called until the http status code 201 is returned. In each subsequent calls, the "questionAnswersList" object from the previous response need to be included and the missing answer fields need to be filled out. 
+
+
+        ```mermaid
+        sequenceDiagram
+        participant Customer
+        participant API
+        Customer->>API: Send request
+        API->>Customer: Missing Fields (error 487)
+        loop Analyze result
+        Customer->>Customer: Fill missing values
+        end
+        Customer->>API: Send request
+        API->>Customer: Created (201)
+      parameters:
+        - schema:
+            type: string
+            example: 431c969834424de9adrf
+            minLength: 20
+            maxLength: 20
+          in: query
+          name: claimId
+          required: true
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              x-examples:
+                example-1:
+                  QuestionsListParams:
+                    AccidentType: CI
+                    ClaimantPOI: PQ
+                    ClaimantVehCd: VAN
+                    InsuredPOI: DF
+                    InsuredVehCd: CAR
+                    SelectedClaimant:
+                      - 12b4461dcb52428f880a
+                    questionAnswersList:
+                      - questionId: '515'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_TRACON
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '515'
+                            questionCategoryCode: TRACON
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: TRAFFIC_CONDITIONS
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Traffic Conditions
+                            controlUctValues:
+                              - name: Light
+                                value: LGT
+                              - name: Heavy
+                                value: HVY
+                              - name: Moderate
+                                value: MOD
+                              - name: Rush Hour
+                                value: RSH
+                        questionText: Traffic Conditions
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '001'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '516'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_AREA
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '516'
+                            questionCategoryCode: AREA
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: AREA_CHR
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Area Characteristics
+                            controlUctValues:
+                              - name: Business
+                                value: BUS
+                              - name: Freeway/Interstate
+                                value: FRE
+                              - name: Hospital
+                                value: HOS
+                              - name: Industrial
+                                value: INS
+                              - name: Other
+                                value: OTH
+                              - name: Residential
+                                value: RES
+                              - name: Road Work/Construction
+                                value: RWK
+                              - name: Rural
+                                value: RUR
+                              - name: School
+                                value: SCH
+                        questionText: Area Characteristics
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '002'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '517'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_WEATHER
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '517'
+                            questionCategoryCode: WEATHER
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: WEATHER_COND
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Weather
+                            controlUctValues:
+                              - name: Clear
+                                value: CLR
+                              - name: Fog - Light
+                                value: FLM
+                              - name: Fog - Moderate/Heavy
+                                value: FMH
+                              - name: Overcast
+                                value: O
+                              - name: Rain - Light
+                                value: RLM
+                              - name: Rain - Moderate/Heavy
+                                value: RMH
+                              - name: Severe Wind
+                                value: SW
+                              - name: Sleet - Light
+                                value: SLM
+                              - name: Sleet - Moderate/Heavy
+                                value: SMH
+                              - name: Snow - Light
+                                value: SNL
+                              - name: Snow - Moderate/Heavy
+                                value: SNH
+                        questionText: Weather Conditions
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '003'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '518'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_POI
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: '999'
+                            controlIndicator: POI_IND
+                            answerTxt: DF
+                            controlType: txt
+                            controlLabel: 'Insured:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: '999'
+                            controlIndicator: POI_CLD
+                            answerTxt: PQ
+                            controlType: txt
+                            controlLabel: 'Claimant:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: ''
+                            tableColumnName: ''
+                            answerCode: ''
+                            controlIndicator: POI_IMPACTLNK
+                            answerTxt: ''
+                            controlType: lnk
+                            controlLabel: 'Choose Impact:'
+                            controlUctType: ''
+                            controlUctValues: []
+                        questionText: Points of Impact
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '004'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '162'
+                        accidentType: CI
+                        answerText: CLD
+                        vehicleNumber: '0'
+                        questionCategoryCode: BOTH_CI
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Which driver had a traffic control?
+                        questionType: drp
+                        questionUctType: CIBN Values
+                        questionUctValues:
+                          - name: Claimant
+                            value: CLD
+                          - name: Insured
+                            value: IND
+                          - name: Both
+                            value: BOT
+                          - name: Neither
+                            value: NEI
+                        questionSequence: '005'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: PC
+                      - questionId: '260'
+                        accidentType: CI
+                        answerText: 'YES'
+                        vehicleNumber: '0'
+                        questionCategoryCode: BOTH_DISTRF
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Was the traffic control disregarded?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '008'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '266'
+                        accidentType: CI
+                        answerText: FRD
+                        vehicleNumber: '0'
+                        questionCategoryCode: BOTH_DISTRFCNTRL
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: What type of traffic control was disregarded?
+                        questionType: drp
+                        questionUctType: CI Traffic Control
+                        questionUctValues:
+                          - name: Red
+                            value: RED
+                          - name: Flashing Red
+                            value: FRD
+                          - name: Yellow
+                            value: YEL
+                          - name: Flashing Caution
+                            value: FCT
+                          - name: Stop Sign
+                            value: STP
+                          - name: Yield Sign
+                            value: YLD
+                        questionSequence: '009'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '135'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: BOTH_WEA
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Did weather or lighting conditions require the use of headlights or wipers?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '011'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '134'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_ATTEN
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Did the Insured driver keep a proper lookout?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '012'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: ''
+                      - questionId: '101'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_EVA
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '101'
+                            questionCategoryCode: EVA
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: EVA_ACTIONS
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Evasive Actions
+                            controlUctValues:
+                              - name: Applied Brakes
+                                value: APP
+                              - name: Backed Up
+                                value: BAC
+                              - name: No Action Possible
+                                value: NAP
+                              - name: Sounded Horn
+                                value: SOU
+                              - name: Sped Up
+                                value: SPE
+                              - name: Stopped
+                                value: STP
+                              - name: Swerved
+                                value: SWE
+                        questionText: Did the Insured driver take appropriate evasive action?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '013'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '102'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_IMP
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '102'
+                            questionCategoryCode: IMP
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: IMP_IMPAREMENTS
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Impairments
+                            controlUctValues:
+                              - name: Alcohol
+                                value: ALC
+                              - name: Narcotic Drugs
+                                value: NAR
+                              - name: Over the Counter Drugs
+                                value: OCD
+                              - name: Prescription Drugs
+                                value: PRE
+                        questionText: 'Was the Insured driver impaired by drugs, alcohol or medication?'
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '014'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '103'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_DIST
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '103'
+                            questionCategoryCode: DIST
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: DIST_DISTRACTIONS
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Distractions
+                            controlUctValues:
+                              - name: Animals/Insects
+                                value: ANM
+                              - name: Arguing
+                                value: ARG
+                              - name: Cell Phone
+                                value: CP
+                              - name: Drowsiness
+                                value: DRO
+                              - name: Eating/Drinking
+                                value: ED
+                              - name: Grooming
+                                value: GRM
+                              - name: Kids
+                                value: KID
+                              - name: Mechanical Problems
+                                value: MPB
+                              - name: Mentally Pre-occupied
+                                value: MPR
+                              - name: Navigation System
+                                value: NAV
+                              - name: Noises
+                                value: NOS
+                              - name: Observing Surrounding Area
+                                value: OBS
+                              - name: Passengers
+                                value: PAS
+                              - name: Physically Pre-occupied
+                                value: PPR
+                              - name: Radio/CD
+                                value: RAD
+                              - name: Reading
+                                value: REA
+                              - name: Sickness
+                                value: SK
+                              - name: Sightseeing
+                                value: SS
+                              - name: Smoking
+                                value: SMO
+                              - name: Taking Photos
+                                value: PHO
+                              - name: Texting/Emailing
+                                value: TXT
+                              - name: TV/DVD
+                                value: TV
+                        questionText: Was the Insured driver distracted?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '015'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: ''
+                      - questionId: '100'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_SPD
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '100'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_ACTUAL_NUMBER_3
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Actual Speed:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '100'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_LIMIT
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: 'Speed Limit:'
+                            controlUctType: Speed Limit
+                            controlUctValues:
+                              - name: '5'
+                                value: '005'
+                              - name: '10'
+                                value: '010'
+                              - name: '15'
+                                value: '015'
+                              - name: '20'
+                                value: '020'
+                              - name: '25'
+                                value: '025'
+                              - name: '30'
+                                value: '030'
+                              - name: '35'
+                                value: '035'
+                              - name: '40'
+                                value: '040'
+                              - name: '45'
+                                value: '045'
+                              - name: '50'
+                                value: '050'
+                              - name: '55'
+                                value: '055'
+                              - name: '60'
+                                value: '060'
+                              - name: '65'
+                                value: '065'
+                              - name: '70'
+                                value: '070'
+                              - name: '75'
+                                value: '075'
+                              - name: '80'
+                                value: '080'
+                              - name: '85'
+                                value: '085'
+                              - name: '90'
+                                value: '090'
+                              - name: '95'
+                                value: '095'
+                              - name: '100'
+                                value: '100'
+                              - name: No Posted Limit
+                                value: 'NO'
+                              - name: None
+                                value: NON
+                          - questionId: '100'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_SAFE_NUMBER_3
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Safe Speed:'
+                            controlUctType: ''
+                            controlUctValues: []
+                        questionText: Was speed a contributing factor for the Insured driver?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '016'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '127'
+                        accidentType: CI
+                        answerText: RIG
+                        vehicleNumber: '0'
+                        questionCategoryCode: NPC_DIR
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: From which direction was the Insured driver approaching the Claimant vehicle?
+                        questionType: drp
+                        questionUctType: Direction Approach
+                        questionUctValues:
+                          - name: Left
+                            value: LEF
+                          - name: Right
+                            value: RIG
+                        questionSequence: '017'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: ''
+                      - questionId: '514'
+                        accidentType: CI
+                        answerText: 'YES'
+                        vehicleNumber: '0'
+                        questionCategoryCode: SUB_VIEWOBS
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '514'
+                            questionCategoryCode: VIEWOBS
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: VIEW_OBSTRUCTIONS
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Obstructions
+                            controlUctValues:
+                              - name: Another Vehicle
+                                value: AVH
+                              - name: Blind Spot
+                                value: BST
+                              - name: Buildings/Structures
+                                value: BUI
+                              - name: Crowds/Gathering
+                                value: PEO
+                              - name: Fogged Windows
+                                value: FOG
+                              - name: Hardscape
+                                value: HRD
+                              - name: Landscaping
+                                value: LSC
+                              - name: Oncoming Headlights
+                                value: OHL
+                              - name: 'Road Characteristics (Curve, Hill)'
+                                value: RDC
+                              - name: Road or Business Signs
+                                value: SIG
+                              - name: Sun in Eyes/Sun Glare
+                                value: SUN
+                              - name: Vegetation
+                                value: VEG
+                        questionText: Was the Insured’s view obstructed?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '024'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '504'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: SUB_MECFAIL
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '504'
+                            questionCategoryCode: MECFAIL
+                            tableName: Table1
+                            tableColumnName: ''
+                            answerCode: ''
+                            controlIndicator: MECFAIL_FAIL
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Mch/Tire Fail
+                            controlUctValues:
+                              - name: Brake Failure
+                                value: MTF1
+                              - name: Electrical System Failure
+                                value: MTF2
+                              - name: Engine Failure
+                                value: MTF3
+                              - name: Hood Opening
+                                value: MTF4
+                              - name: Steering Failure
+                                value: MTF5
+                              - name: Tire Blowout
+                                value: MTF6
+                              - name: Other
+                                value: MTF7
+                        questionText: Was sudden mechanical or tire failure a contributing factor for the Insured?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '025'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '510'
+                        accidentType: CI
+                        answerText: 'NO'
+                        vehicleNumber: '0'
+                        questionCategoryCode: SUB_HAZARDS
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '510'
+                            questionCategoryCode: HAZARDS
+                            tableName: Table1
+                            tableColumnName: ''
+                            answerCode: ''
+                            controlIndicator: HAZARDS_ROAD
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Hazards in the Road
+                            controlUctValues:
+                              - name: Adult Pedestrian
+                                value: HR5
+                              - name: Animal (livestock)
+                                value: HR1
+                              - name: Animal (Pet)
+                                value: HR2
+                              - name: Debris from Vehicle (improperly secured items)
+                                value: HR3
+                              - name: Emergency vehicles without siren
+                                value: HR4
+                              - name: Other
+                                value: HR7
+                              - name: Road Condition
+                                value: HR6
+                        questionText: Did any sudden hazards appear in the road to cause the accident?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '028'
+                        currentCategoryCode: INSURED
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '105'
+                        accidentType: CI
+                        answerText: 'YES'
+                        vehicleNumber: '0'
+                        questionCategoryCode: PC_SPD
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '105'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_ACTUAL_NUMBER_3
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Actual Speed:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '105'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_LIMIT
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: 'Speed Limit:'
+                            controlUctType: Speed Limit
+                            controlUctValues:
+                              - name: '5'
+                                value: '005'
+                              - name: '10'
+                                value: '010'
+                              - name: '15'
+                                value: '015'
+                              - name: '20'
+                                value: '020'
+                              - name: '25'
+                                value: '025'
+                              - name: '30'
+                                value: '030'
+                              - name: '35'
+                                value: '035'
+                              - name: '40'
+                                value: '040'
+                              - name: '45'
+                                value: '045'
+                              - name: '50'
+                                value: '050'
+                              - name: '55'
+                                value: '055'
+                              - name: '60'
+                                value: '060'
+                              - name: '65'
+                                value: '065'
+                              - name: '70'
+                                value: '070'
+                              - name: '75'
+                                value: '075'
+                              - name: '80'
+                                value: '080'
+                              - name: '85'
+                                value: '085'
+                              - name: '90'
+                                value: '090'
+                              - name: '95'
+                                value: '095'
+                              - name: '100'
+                                value: '100'
+                              - name: No Posted Limit
+                                value: 'NO'
+                              - name: None
+                                value: NON
+                          - questionId: '105'
+                            questionCategoryCode: SPD
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: SPD_SAFE_NUMBER_3
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Safe Speed:'
+                            controlUctType: ''
+                            controlUctValues: []
+                        questionText: Was speed a contributing factor for the Claimant driver?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '030'
+                        currentCategoryCode: CLAIMANT
+                        questionValidationCode: OTH_DISPLAY_YES
+                      - questionId: '110'
+                        accidentType: CI
+                        answerText: '002'
+                        vehicleNumber: '0'
+                        questionCategoryCode: PC_CROSS
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: How many lanes did the Claimant cross prior to impact?
+                        questionType: drp
+                        questionUctType: Lanes Crossed
+                        questionUctValues:
+                          - name: '0'
+                            value: '000'
+                          - name: '1'
+                            value: '001'
+                          - name: '2'
+                            value: '002'
+                          - name: '3'
+                            value: '003'
+                          - name: '4'
+                            value: '004'
+                          - name: '5'
+                            value: '005'
+                          - name: '6'
+                            value: '006'
+                          - name: '7'
+                            value: '007'
+                          - name: '8'
+                            value: '008'
+                        questionSequence: '031'
+                        currentCategoryCode: CLAIMANT
+                        questionValidationCode: ''
+                      - questionId: '253'
+                        accidentType: CI
+                        answerText: 'YES'
+                        vehicleNumber: '0'
+                        questionCategoryCode: PC_ACKPER
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Did the Claimant driver acknowledge seeing the Insured vehicle before proceeding into the intersection?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '035'
+                        currentCategoryCode: CLAIMANT
+                        questionValidationCode: ''
+                      - questionId: '250'
+                        accidentType: CI
+                        answerText: 'YES'
+                        vehicleNumber: '0'
+                        questionCategoryCode: PC_APPSTOP
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Did the Claimant make an appropriate stop?
+                        questionType: rdo
+                        questionUctType: YesNo
+                        questionUctValues:
+                          - name: 'Yes'
+                            value: 'YES'
+                          - name: 'No'
+                            value: 'NO'
+                        questionSequence: '038'
+                        currentCategoryCode: CLAIMANT
+                        questionValidationCode: ''
+              properties:
+                QuestionsListParams:
+                  type: object
+                  required:
+                    - AccidentType
+                    - SelectedClaimant
+                  properties:
+                    AccidentType:
+                      type: string
+                      minLength: 1
+                    ClaimantPOI:
+                      type: string
+                    ClaimantVehCd:
+                      type: string
+                    InsuredPOI:
+                      type: string
+                    InsuredVehCd:
+                      type: string
+                    SelectedClaimant:
+                      type: array
+                      items:
+                        type: string
+                    questionAnswersList:
+                      type: array
+                      uniqueItems: true
+                      items:
+                        type: object
+                        properties:
+                          questionId:
+                            type: string
+                            minLength: 1
+                          accidentType:
+                            type: string
+                            minLength: 1
+                          answerText:
+                            type: string
+                            description: Required if questionUctValues is not empty
+                          vehicleNumber:
+                            type: string
+                            minLength: 1
+                          questionCategoryCode:
+                            type: string
+                            minLength: 1
+                          roleCode:
+                            type: string
+                            minLength: 1
+                          questionOtherAnswers:
+                            type: array
+                            uniqueItems: true
+                            items:
+                              type: object
+                              properties:
+                                questionId:
+                                  type: string
+                                  minLength: 1
+                                questionCategoryCode:
+                                  type: string
+                                  minLength: 1
+                                tableName:
+                                  type: string
+                                  minLength: 1
+                                tableColumnName:
+                                  type: string
+                                  minLength: 1
+                                answerCode:
+                                  type: string
+                                  description: To be filled out if controlUctValues is not empty. Multiple values delimited with pipe(|)
+                                controlIndicator:
+                                  type: string
+                                  minLength: 1
+                                answerTxt:
+                                  type: string
+                                  description: To be filled out when the controlType is either 'txt' or 'mlt'.
+                                controlType:
+                                  type: string
+                                  minLength: 1
+                                controlLabel:
+                                  type: string
+                                controlUctType:
+                                  type: string
+                                  minLength: 1
+                                controlUctValues:
+                                  type: array
+                                  uniqueItems: true
+                                  minItems: 1
+                                  items:
+                                    type: object
+                                    properties:
+                                      name:
+                                        type: string
+                                        minLength: 1
+                                      value:
+                                        type: string
+                                        minLength: 1
+                                    required:
+                                      - name
+                                      - value
+                          questionText:
+                            type: string
+                            minLength: 1
+                          questionType:
+                            type: string
+                          questionUctType:
+                            type: string
+                          questionUctValues:
+                            type: array
+                            items:
+                              type: object
+                          questionSequence:
+                            type: string
+                            minLength: 1
+                          currentCategoryCode:
+                            type: string
+                            minLength: 1
+                          questionValidationCode:
+                            type: string
+                        required:
+                          - answerText
+              required:
+                - QuestionsListParams
+            examples:
+              example-Initial request:
+                value:
+                  QuestionsListParams:
+                    AccidentType: LC
+                    ClaimantPOI: ''
+                    ClaimantVehCd: ''
+                    InsuredPOI: ''
+                    InsuredVehCd: ''
+                    SelectedClaimant: []
+                    QuestionAnswersList: []
+              example-subsequent request:
+                value:
+                  QuestionsListParams:
+                    AccidentType: CI
+                    ClaimantPOI: PQ
+                    ClaimantVehCd: VAN
+                    InsuredPOI: DF
+                    InsuredVehCd: CAR
+                    SelectedClaimant:
+                      - 12b4461dcb52428f880a
+                    questionAnswersList:
+                      - questionId: '515'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_TRACON
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '515'
+                            questionCategoryCode: TRACON
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: TRAFFIC_CONDITIONS
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Traffic Conditions
+                            controlUctValues:
+                              - name: Light
+                                value: LGT
+                              - name: Heavy
+                                value: HVY
+                              - name: Moderate
+                                value: MOD
+                              - name: Rush Hour
+                                value: RSH
+                        questionText: Traffic Conditions
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '001'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '516'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_AREA
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '516'
+                            questionCategoryCode: AREA
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: ''
+                            controlIndicator: AREA_CHR
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Area Characteristics
+                            controlUctValues:
+                              - name: Business
+                                value: BUS
+                              - name: Freeway/Interstate
+                                value: FRE
+                              - name: Hospital
+                                value: HOS
+                              - name: Industrial
+                                value: INS
+                              - name: Other
+                                value: OTH
+                              - name: Residential
+                                value: RES
+                              - name: Road Work/Construction
+                                value: RWK
+                              - name: Rural
+                                value: RUR
+                              - name: School
+                                value: SCH
+                        questionText: Area Characteristics
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '002'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+        description: "The initial request would be like in the \"example-Initial request\" which will give back and http code 487 and the collection to get the valid values for each fields. AccidentType is mandatory in the initial request and it needs to be one from the below list. \n\n\n\n         BAK\t(Backing into Roadway)\n         CI \t(Crossing Intersection)\n         COS\t(Crossover Sideswipe)\n         HOC\t(Head On Collision)\n         LC \t(Lane Change)\n         LTC\t(Left Turn)\n         MER\t(Merge)\n         MC \t(Multi Car)\n         OPT\t(Opposing Turns)\n         OTH\t(Other)\n         PR \t(Parallel Parked Entering Traffic)\n         LOT\t(Parking Lot)\n         PT \t(Passing and Turning)\n         PL \t(Passing on Left)\n         PED\t(Pedestrian)\n         RE \t(Rear End)\n         RS \t(Right Squeeze)\n         RT \t(Right Turn)\n         ROT\t(Rotary)\n         SCI\t(Single Car Impact)\n         UTN\t(U-Turn)\n         SLP\t(Slip & Fall)\n\n\nOnce the initial request is received with a valid accident type, the curresponding questions will be loaded in the \"QuestionAnswersList\" object and send back in the response with the http code 487. The subsequent request will then use the same object to fill the answers and send back the request to proceed further until http code 201 is responded back. \n\nAlso the manadatory questions to be answered in the subsequent request will be mentioned in the response for each request. There are a various validation codes based on the fields required/missing and the codes will be sent back in the response \"validationResult\" collection. Possible validations codes as below. The detailed validation message will be available in the validation message property and also isError property indicates whether this is an error or warning.\n\n\n\tREQ_ANS\t          (Answer required for mandatory questions)\n        INV_ANS\t          (Invalid answer specified)\n        INV_FRT\t          (Invalid answer format)\n        REQ_POI\t          (Point of Impact is required)\n        INV_POI\t          (Point of impact is invalid)\n        REQ_CLM\t          (Claimant required)\n        INV_CLM\t          (Invalid claimant specified)\n        INV_COM\t          (Invalid combination specified)\n        MC_WARN\t          (Multicar warning)\n        MC_ERR\t          (Multicar error)\n\n\n\n\n <B> Some more guidelines in filling out the questionAnswerList</B>\n <ul>\n  <li>The field QuestionsListParams.SelectedClaimant will take value(s) from the collection claimantList[i].value in the response.</li>\n  <li>The fields QuestionsListParams.ClaimantVehCd and QuestionsListParams.InsuredVehCd will take values from the collection additionalUctValues.vehicleTypes[i].value in the response.</li>\n  <li>The fields QuestionsListParams.ClaimantPOI and QuestionsListParams.InsuredPOI will take values from the collection additionalUctValues.pointsOfImpacts[i].value in the response. This should be taken based on the vehicle selected. For example, if the QuestionsListParams.ClaimantVehCd has a value of <I>MOT</I>, the curresponding value for the QuestionsListParams.ClaimantPOI selected from the collection additionalUctValues.pointsOfImpacts[i].value should have a cascadeCode of <I>Point of ImpactMOT</I>(Point of Impact + QuestionsListParams.ClaimantVehCd)</li>\n  <li>The only other fields need to filled out in the request object ( QuestionsListParams.questionAnswersList[i] ) in subsequent requests are questionAnswersList[i].answerText, questionAnswersList[i].questionOtherAnswers[j].answerCode or questionAnswersList[i].questionOtherAnswers[j].answerTxt</li>\n\n<li>If questionAnswersList[i].questionUctValues is empty or null then no need to fill out the questionAnswersList[i].answerText</li>\n\n<li>If there are values in the questionAnswersList[i].questionUctValues then questionAnswersList[i].answerText valid values are from questionAnswersList[i].questionUctValues</li>\n\n<li>If accidentType is SLP ( Slip & Fall), all the questionAnswersList[i].questionOtherAnswers is mandatory.</li>\n\n<li>If questionAnswersList[i].questionOtherAnswers[j].controlType is <i>drp</i>, questionAnswersList[i].questionOtherAnswers[j].AnswerCode need to be filled out and the valid values are from the collection questionAnswersList[i].questionOtherAnswers[j].controlUctValues</li>\n\n<li>If questionAnswersList[i].questionOtherAnswers[j].controlType is <i>lst</i>, questionAnswersList[i].questionOtherAnswers[j].AnswerCode need to be filled out and can have multiple values from the collection questionAnswersList[i].questionOtherAnswers[j].controlUctValues. The delimited in case multiple values is pipe (|)</li>\n\n<li>If questionAnswersList[i].questionOtherAnswers[j].controlType is <i>txt</i>, questionAnswersList[i].questionOtherAnswers[j].AnswerTxt need to be filled out based on the questionAnswersList[i].questionOtherAnswers[j].ControlLabel</li>\n\n<li>If questionAnswersList[i].questionOtherAnswers[j].controlType is <i>dtc</i>, questionAnswersList[i].questionOtherAnswers[j].AnswerTxt need to be filled out with a valid date value and format is MM/DD/YYYY</li>\n\n<li>If questionAnswersList[i].questionOtherAnswers[j].controlType is <i>mlt</i>, questionAnswersList[i].questionOtherAnswers[j].AnswerTxt can accept a multiline text.</li>\n\n<li>If accidentType is SLP ( Slip & Fall) and answer for the questionAnswersList[i].questionId 521(Accident Location) is <I>INS</I>, allowed values for Lighting Conditions are <I>AFL (Artificial), NTL (Natural)</I>. For the Accident Location <I>OUT</I>, the valid values are <I>AFL (Artificial), DRK (Darkness), DAY (Daylight), OCT (Overcast)</I>.</li>\n\n</ul>\n\n\n```mermaid\nflowchart TD\n    Start --> A[Client sends request]\n    A -->|POST incidentDetails| B{All the required questions are answered with valid answers}\n    B -->|Yes| C{New questions triggered}\n    C -->|Yes - Http 487| A\n    B -->|No - Http 487| A\n    C -->|No| D[Save incident details and send 201 response] \n    D --> End\n    "
+      responses:
+        '201':
+          description: Created
+        '422':
+          description: Unprocessable Entity. Input parameter error.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    validationResult: null
+                    accidentType: null
+                    claimantList: null
+                    additionalUctValues: null
+                    questionAnswersList: null
+                    status: Failed
+                    errorMessage: AdjusterId Cannot be Null
+                    errorCode: 422
+                properties:
+                  validationResult:
+                    type: 'null'
+                  accidentType:
+                    type: 'null'
+                  claimantList:
+                    type: 'null'
+                  additionalUctValues:
+                    type: 'null'
+                  questionAnswersList:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-1:
+                  value:
+                    validationResult: null
+                    accidentType: null
+                    claimantList: null
+                    additionalUctValues: null
+                    questionAnswersList: null
+                    errorMessage: AdjusterId Cannot be Null
+        '487':
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    validationResult:
+                      - code: string
+                        message: string
+                        isError: boolean
+                    accidentType:
+                      - name: string
+                        value: string
+                    claimantList:
+                      - name: string
+                        value: string
+                    additionalUctValues:
+                      vehicleTypes:
+                        - name: string
+                          value: string
+                      pointsOfImpacts:
+                        - name: string
+                          value: string
+                          cascadeCode: string
+                    questionAnswersList:
+                      - questionId: string
+                        accidentType: string
+                        answerText: string
+                        vehicleNumber: string
+                        questionCategoryCode: string
+                        roleCode: string
+                        questionOtherAnswers:
+                          - questionId: string
+                            questionCategoryCode: string
+                            tableName: string
+                            tableColumnName: string
+                            answerCode: string
+                            controlIndicator: string
+                            answerTxt: string
+                            controlType: string
+                            controlLabel: string
+                            controlUctType: string
+                            controlUctValues:
+                              - name: string
+                                value: string
+                        questionText: string
+                        questionType: string
+                        questionUctType: string
+                        questionUctValues:
+                          - name: string
+                            value: string
+                        questionSequence: string
+                        currentCategoryCode: string
+                        questionValidationCode: string
+                    status: string
+                    errorMessage: string
+                    errorCode: 0
+                properties:
+                  validationResult:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        code:
+                          type: string
+                          minLength: 1
+                          description: Code of the validation error/warning
+                        message:
+                          type: string
+                          minLength: 1
+                          description: Description of Error/Warning
+                        isError:
+                          type: boolean
+                          description: True for Error and False for Warning
+                        '':
+                          - code
+                          - message
+                  accidentType:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                        value:
+                          type: string
+                          minLength: 1
+                      required:
+                        - name
+                        - value
+                  claimantList:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          minLength: 1
+                        value:
+                          type: string
+                          minLength: 1
+                      required:
+                        - name
+                        - value
+                  additionalUctValues:
+                    type: object
+                    required:
+                      - vehicleTypes
+                      - pointsOfImpacts
+                    properties:
+                      vehicleTypes:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              minLength: 1
+                            value:
+                              type: string
+                              minLength: 1
+                          required:
+                            - name
+                            - value
+                      pointsOfImpacts:
+                        type: array
+                        uniqueItems: true
+                        minItems: 1
+                        items:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              minLength: 1
+                            value:
+                              type: string
+                              minLength: 1
+                            cascadeCode:
+                              type: string
+                              minLength: 1
+                          required:
+                            - name
+                            - value
+                            - cascadeCode
+                  questionAnswersList:
+                    type: array
+                    uniqueItems: true
+                    minItems: 1
+                    items:
+                      type: object
+                      properties:
+                        questionId:
+                          type: string
+                          minLength: 1
+                        accidentType:
+                          type: string
+                          minLength: 1
+                        answerText:
+                          type: string
+                          minLength: 1
+                        vehicleNumber:
+                          type: string
+                          minLength: 1
+                        questionCategoryCode:
+                          type: string
+                          minLength: 1
+                        roleCode:
+                          type: string
+                          minLength: 1
+                        questionOtherAnswers:
+                          type: array
+                          uniqueItems: true
+                          minItems: 1
+                          items:
+                            type: object
+                            properties:
+                              questionId:
+                                type: string
+                                minLength: 1
+                              questionCategoryCode:
+                                type: string
+                                minLength: 1
+                              tableName:
+                                type: string
+                                minLength: 1
+                              tableColumnName:
+                                type: string
+                                minLength: 1
+                              answerCode:
+                                type: string
+                                minLength: 1
+                              controlIndicator:
+                                type: string
+                                minLength: 1
+                              answerTxt:
+                                type: string
+                                minLength: 1
+                              controlType:
+                                type: string
+                                minLength: 1
+                              controlLabel:
+                                type: string
+                                minLength: 1
+                              controlUctType:
+                                type: string
+                                minLength: 1
+                              controlUctValues:
+                                type: array
+                                uniqueItems: true
+                                minItems: 1
+                                items:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                      minLength: 1
+                                    value:
+                                      type: string
+                                      minLength: 1
+                                  required:
+                                    - name
+                                    - value
+                            required:
+                              - questionId
+                              - questionCategoryCode
+                              - tableName
+                              - tableColumnName
+                              - answerCode
+                              - controlIndicator
+                              - answerTxt
+                              - controlType
+                              - controlLabel
+                              - controlUctType
+                        questionText:
+                          type: string
+                          minLength: 1
+                        questionType:
+                          type: string
+                          minLength: 1
+                        questionUctType:
+                          type: string
+                          minLength: 1
+                        questionUctValues:
+                          type: array
+                          uniqueItems: true
+                          minItems: 1
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                                minLength: 1
+                              value:
+                                type: string
+                                minLength: 1
+                            required:
+                              - name
+                              - value
+                        questionSequence:
+                          type: string
+                          minLength: 1
+                        currentCategoryCode:
+                          type: string
+                          minLength: 1
+                          description: Possible values are General/Claimant or Insured. this is informative field only.
+                        questionValidationCode:
+                          type: string
+                          minLength: 1
+                      required:
+                        - questionId
+                        - accidentType
+                        - answerText
+                        - vehicleNumber
+                        - questionCategoryCode
+                        - roleCode
+                        - questionText
+                        - questionType
+                        - questionUctType
+                        - questionSequence
+                        - currentCategoryCode
+                        - questionValidationCode
+                required:
+                  - validationResult
+                  - accidentType
+                  - claimantList
+                  - additionalUctValues
+                  - questionAnswersList
+              examples:
+                example-487:
+                  value:
+                    validationResult:
+                      - code: REQ_ANS
+                        message: '162,163'
+                        isError: true
+                      - code: INV_POI
+                        message: Point of Impact combination is invalid
+                        isError: true
+                    accidentType:
+                      - name: Backing into Roadway
+                        value: BAK
+                      - name: Crossing Intersection
+                        value: CI
+                      - name: Other
+                        value: OTH
+                      - name: Parallel Parked Entering Traffic
+                        value: PR
+                      - name: Parking Lot
+                        value: LOT
+                      - name: U-Turn
+                        value: UTN
+                      - name: Slip & Fall
+                        value: SLP
+                    claimantList:
+                      - name: Test Claimant
+                        value: 4fe0154aa67d1e1d838
+                    additionalUctValues:
+                      vehicleTypes:
+                        - name: Bike
+                          value: BIK
+                        - name: Motorcycle
+                          value: MOT
+                        - name: Tractor Trailer
+                          value: TRA
+                        - name: Van/SUV
+                          value: VAN
+                      pointsOfImpacts:
+                        - name: Right
+                          value: BRS
+                          cascadeCode: Point of ImpactBIK
+                        - name: Right
+                          value: BRS
+                          cascadeCode: Point of ImpactMOT
+                        - name: Driver Front Corner
+                          value: DF
+                          cascadeCode: Point of ImpactVAN
+                        - name: Driver Front Body
+                          value: DFB
+                          cascadeCode: Point of ImpactBUS
+                        - name: Bike Right Side
+                          value: BRS
+                          cascadeCode: Point of Impact
+                    questionAnswersList:
+                      - questionId: '515'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_TRACON
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '515'
+                            questionCategoryCode: TRACON
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: LGT
+                            controlIndicator: TRAFFIC_CONDITIONS
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Traffic Conditions
+                            controlUctValues:
+                              - name: Light
+                                value: LGT
+                              - name: Heavy
+                                value: HVY
+                              - name: Moderate
+                                value: MOD
+                              - name: Rush Hour
+                                value: RSH
+                        questionText: Traffic Conditions
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '001'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '516'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_AREA
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '516'
+                            questionCategoryCode: AREA
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: BUS
+                            controlIndicator: AREA_CHR
+                            answerTxt: ''
+                            controlType: drp
+                            controlLabel: ''
+                            controlUctType: Area Characteristics
+                            controlUctValues:
+                              - name: Business
+                                value: BUS
+                              - name: Freeway/Interstate
+                                value: FRE
+                              - name: School
+                                value: SCH
+                        questionText: Area Characteristics
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '002'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '517'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_WEATHER
+                        roleCode: ''
+                        questionOtherAnswers:
+                          - questionId: '517'
+                            questionCategoryCode: WEATHER
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: RMH
+                            controlIndicator: WEATHER_COND
+                            answerTxt: ''
+                            controlType: lst
+                            controlLabel: ''
+                            controlUctType: Weather
+                            controlUctValues:
+                              - name: Clear
+                                value: CLR
+                              - name: Fog - Light
+                                value: FLM
+                              - name: Severe Wind
+                                value: SW
+                              - name: Snow - Moderate/Heavy
+                                value: SNH
+                        questionText: Weather Conditions
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '003'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '518'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: COMMON_POI
+                        roleCode: 'CLD,IND'
+                        questionOtherAnswers:
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: DM
+                            controlIndicator: POI_IND
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Insured:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: Table1
+                            tableColumnName: Column1
+                            answerCode: PF
+                            controlIndicator: POI_CLD
+                            answerTxt: ''
+                            controlType: txt
+                            controlLabel: 'Claimant:'
+                            controlUctType: ''
+                            controlUctValues: []
+                          - questionId: '518'
+                            questionCategoryCode: POI
+                            tableName: ''
+                            tableColumnName: ''
+                            answerCode: ''
+                            controlIndicator: POI_IMPACTLNK
+                            answerTxt: ''
+                            controlType: lnk
+                            controlLabel: 'Choose Impact:'
+                            controlUctType: ''
+                            controlUctValues: []
+                        questionText: Points of Impact
+                        questionType: ''
+                        questionUctType: ''
+                        questionUctValues: []
+                        questionSequence: '004'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: ''
+                      - questionId: '162'
+                        accidentType: CI
+                        answerText: ''
+                        vehicleNumber: '0'
+                        questionCategoryCode: BOTH_CI
+                        roleCode: ''
+                        questionOtherAnswers: []
+                        questionText: Which driver had a traffic control?
+                        questionType: drp
+                        questionUctType: CIBN Values
+                        questionUctValues:
+                          - name: Claimant
+                            value: CLD
+                          - name: Insured
+                            value: IND
+                          - name: Both
+                            value: BOT
+                          - name: Neither
+                            value: NEI
+                        questionSequence: '005'
+                        currentCategoryCode: GENERAL
+                        questionValidationCode: PC
+          description: |
+            This is an intermedicate status which indicates the next action in the validationResult. When client recieve response with this http code, the validationResults should be checked and send back the request again by filling out the missing answers in the questionAnswersList object. 
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      tags:
+        - Incident details
+    parameters: []
+  /liabilityAssessments:
+    get:
+      summary: Liability assessment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    assessmentId: abcd123efgh456ijk78
+                    assessmentDate: '2022-03-17 10:30:45.028'
+                    pdfString: JVBERi0xLg0=
+                properties:
+                  assessmentId:
+                    type: string
+                    example: '1'
+                  assessmentDate:
+                    type: string
+                    minLength: 23
+                    format: date-time
+                    example: '2022-03-17 10:30:45.028'
+                    maxLength: 23
+                  pdfString:
+                    type: string
+                    minLength: 1
+                    description: Base64 encoded PDF string
+                required:
+                  - assessmentId
+                  - assessmentDate
+                  - pdfString
+              examples:
+                example-1:
+                  value:
+                    assessmentId: '1'
+                    assessmentDate: '2022-03-17 10:30:45.028'
+                    pdfString: JVBERi0xLg0=
+        '422':
+          description: Unprocessable Entity. Input parameter error.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: null
+                    status: Failed
+                    errorMessage: ClaimId Cannot be Null
+                    errorCode: 422
+                properties:
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-422:
+                  value:
+                    errorMessage: ClaimId Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: null
+                    status: Failed
+                    errorMessage: ClaimId Not Exists
+                    errorCode: 485
+                properties:
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-485:
+                  value:
+                    errorMessage: ClaimId Not Exists
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      operationId: GetLiaAssessments
+      description: Gets the Liability assessment information based on the claim Id passed. This can be the latest assessment or the preferred.
+      parameters:
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+        - schema:
+            type: string
+            example: 431c987834424de9adef
+          in: query
+          name: claimId
+          required: true
+          description: Claim Id
+        - schema:
+            type: boolean
+            enum:
+              - 'true'
+              - 'false'
+          in: query
+          name: isPreferred
+          description: 'If true, sends the preferred assessment information, otherwise the latest assessment is send back.'
+        - schema:
+            type: string
+            enum:
+              - pdf
+              - json
+          in: query
+          name: format
+          description: Optional field as of now. Default is pdf.
+        - schema:
+            type: string
+            example: '1'
+          in: query
+          name: assessmentId
+          description: Id for the assessment
+        - schema:
+            type: string
+            format: date-time
+            example: '2022-03-17 10:25:45.010'
+          in: query
+          name: assessmentDate
+          description: Assessment generated date
+      tags:
+        - Liability
+    post:
+      summary: Liability assessment
+      operationId: GenerateLIAAssessment
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    liaAssessmentStatus: Assessment Generated Successfully
+                    warnings:
+                      - 'On the Incident Details panel you indicated the insured speed was a contributing factor.  You must enter the Posted Speed, Actual Speed and Safe Speed for this to be considered.  The insured speed will be ignored in this assessment.'
+                      - 'On the Incident Details panel you indicated the insured was distracted; however, on the insured Driver panel you did not select a distraction.  The insured distraction will be ignored in this assessment.'
+                    errors: []
+                    errorCode: 285
+                properties:
+                  assessmentId:
+                    type: string
+                    description: Assessment unique id generated. This can be used to set the assessment as preferred.
+                    example: '1'
+                  assessmentDate:
+                    type: string
+                    description: 'Assessment generated date in the format YYYY-MM-DD HH:mm:ss.SSS'
+                    example: '2022-03-17 10:30:45.028'
+                    minLength: 23
+                    maxLength: 23
+                required:
+                  - assessmentId
+                  - assessmentDate
+              examples:
+                example-1:
+                  value:
+                    assessmentId: '1'
+                    assessmentDate: '2022-03-15 15:25:32.025'
+        '285':
+          description: Assessment generated with warnings
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    liaAssessmentStatus: Assessment Generated Successfully
+                    warnings:
+                      - 'On the Incident Details panel you indicated the insured speed was a contributing factor.  You must enter the Posted Speed, Actual Speed and Safe Speed for this to be considered.  The insured speed will be ignored in this assessment.'
+                      - 'On the Incident Details panel you indicated the insured was distracted; however, on the insured Driver panel you did not select a distraction.  The insured distraction will be ignored in this assessment.'
+                    errors: []
+                    errorCode: 285
+                properties:
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                  assessmentId:
+                    type: string
+                    example: '1'
+                    description: Assessment unique id generated. This can be used to set the assessment as preferred.
+                  assessmentDate:
+                    type: string
+                    example: '2022-03-17 10:30:45.028'
+                    minLength: 23
+                    maxLength: 23
+                    format: date-time
+                    description: 'Assessment generated date in the format YYYY-MM-DD HH:mm:ss.SSS'
+                required:
+                  - warnings
+                  - assessmentId
+                  - assessmentDate
+              examples:
+                example-Success with warnings:
+                  value:
+                    assessmentId: '1'
+                    assessmentDate: '2022-03-17 10:35:45.025'
+                    warnings:
+                      - 'On the Incident Details panel you indicated the insured speed was a contributing factor.  You must enter the Posted Speed, Actual Speed and Safe Speed for this to be considered.  The insured speed will be ignored in this assessment.'
+                      - 'On the Incident Details panel you indicated the insured was distracted; however, on the insured Driver panel you did not select a distraction.  The insured distraction will be ignored in this assessment.'
+                    errors: []
+        '422':
+          description: Unprocessable Entity. Input parameter error.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    liaAssessmentStatus: Failed
+                    warnings: null
+                    errors:
+                      - ClaimId Cannot be Null
+                    errorCode: 422
+                properties:
+                  warnings:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - errors
+              examples:
+                example-1:
+                  value:
+                    warnings: null
+                    errors:
+                      - ClaimId Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    liaAssessmentStatus: Failed
+                    warnings: null
+                    errors:
+                      - ClaimId Not Exists
+                    errorCode: 485
+                properties:
+                  warnings:
+                    type: 'null'
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                required:
+                  - errors
+              examples:
+                example-1:
+                  value:
+                    warnings: null
+                    errors:
+                      - ClaimId Not Exists
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      description: Generate a new Liability assessment for the claim id passed
+      parameters:
+        - schema:
+            type: string
+            example: 431c969834424de9adrf
+            minLength: 20
+            maxLength: 20
+          in: query
+          name: claimId
+          required: true
+          description: Claim Id
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+      tags:
+        - Liability
+    parameters: []
+  /cases:
+    get:
+      summary: Get case information
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    caseId: 751ee8681f5d4bd7ade5
+                    status: Success
+                    errorMessage: null
+                    errorCode: 200
+                properties:
+                  caseId:
+                    type: string
+                  claimNumber:
+                    type: string
+              examples:
+                example-200:
+                  value:
+                    claimNumber: CN1234567
+                    caseId: 751ee8681f5d4bd7ade5
+        '422':
+          description: Unprocessable Entity. Input parameter error
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    caseId: null
+                    status: Failed
+                    errorMessage: AdjusterId Cannot be Null
+                    errorCode: 422
+                properties:
+                  caseId:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-422:
+                  value:
+                    caseId: null
+                    errorMessage: Claim Number Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    caseId: null
+                    status: Failed
+                    errorMessage: AdjusterId Cannot be Null
+                    errorCode: 422
+                properties:
+                  caseId:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-485:
+                  value:
+                    caseId: null
+                    errorMessage: ClaimId Not Exists
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      operationId: GetCases
+      description: 'Retrieves the case id based on the claim number, assignment type and claimant information. Claimant information should be base64 encoded and added to the request header. '
+      parameters:
+        - schema:
+            type: string
+            example: usr12345
+          in: header
+          name: AdjusterId
+          description: ID of the calling application/user
+          required: true
+        - schema:
+            type: string
+            example: CN1234567
+          in: query
+          name: claimNumber
+          description: Claim number
+          required: true
+        - schema:
+            type: string
+            example: LIA
+            enum:
+              - BI
+              - LIA
+          in: query
+          name: assignmentType
+          description: Product type. Values can be either BI or LIA
+        - schema:
+            type: string
+            example: John
+          in: header
+          name: ClaimantFirstName
+          description: First name of the claimant. Base64 encoded.
+        - schema:
+            type: string
+            example: Smith
+          in: header
+          name: ClaimantLastName
+          description: Last name of the claimant. Base64 encoded.
+        - schema:
+            type: string
+          in: header
+          name: ClaimantDOB
+          description: Date of Birth of the claimant. Format is YYYY-MM-DD. Base64 Encrypted.
+      tags:
+        - Cases
+    parameters: []
+  /bodilyInjuryAssessments:
+    get:
+      summary: Bodily injury assessment
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: JVBERi0xLg0=
+                    status: Success
+                    errorMessage: null
+                    errorCode: 200
+                properties:
+                  pdfString:
+                    type: string
+                    minLength: 1
+                    description: Base64 encoded PDF string
+                  assessmentId:
+                    type: string
+                    example: abcd123efgh456ijk789
+                  assessmentDate:
+                    type: string
+                    example: '2022-03-17 10:30:45.028'
+                    format: date-time
+                required:
+                  - pdfString
+              examples:
+                example-1:
+                  value:
+                    pdfString: JVBERi0xLg0=
+                    assessmentId: abcd123efgh456ijk789
+                    assessmentDate: '2022-03-17 10:30:45.028'
+        '422':
+          description: Unprocessable Entity. Input parameter error.
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: null
+                    status: Failed
+                    errorMessage: ClaimId Cannot be Null
+                    errorCode: 422
+                properties:
+                  pdfString:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-1:
+                  value:
+                    pdfString: null
+                    errorMessage: ClaimId Cannot be Null
+        '485':
+          description: Application validation failure
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                x-examples:
+                  example-1:
+                    pdfString: null
+                    status: Failed
+                    errorMessage: ClaimId Not Exists
+                    errorCode: 485
+                properties:
+                  pdfString:
+                    type: 'null'
+                  errorMessage:
+                    type: string
+                    minLength: 1
+                required:
+                  - errorMessage
+              examples:
+                example-1:
+                  value:
+                    pdfString: null
+                    errorMessage: ClaimId Not Exists
+        '500':
+          description: Internal Server Error
+        '585':
+          description: Internal application failure
+      operationId: GetBIAssessments
+      description: Gets the bodily injury assessment information based on the claim Id/case id passed. This can be the latest assessment or the preferred.
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: claimId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: caseId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: isPreferred
+          description: 'If true, sends the preferred assessment information, otherwise the latest assessment is send back.'
+        - schema:
+            type: string
+          in: header
+          name: AdjusterId
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: assessmentId
+          description: Unique identifier for the assessment
+        - schema:
+            type: string
+            format: date-time
+            example: '2022-03-17 10:25:45.010'
+          in: query
+          name: assessmentDate
+          description: Assessment generated date
+        - schema:
+            type: string
+            enum:
+              - pdf
+              - json
+          in: query
+          name: format
+          description: Optional field as of now. Default is pdf.
+      tags:
+        - Bodily Injury
+    parameters: []
+components:
+  schemas: {}
+  securitySchemes:
+    UAT:
+      type: oauth2
+      flows:
+        clientCredentials:
+          scopes:
+            tenant: Access to tenant information.
+          tokenUrl: 'https://sso.uat.verisk.com/oauth2/aus16vfaw34NmgHWh0h8/v1/token'
+      description: Detailed description and sample requests in the Authentication menu.
+    PROD:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: 'https://sso.verisk.com/oauth2/default'
+          scopes:
+            tenant: Access to tenant information
+      description: ''
+tags:
+  - name: Liability Navigator
+  - name: LNav
+security:
+  - OAuth2:
+      - tenant
